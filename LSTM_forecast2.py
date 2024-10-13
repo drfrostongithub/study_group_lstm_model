@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # Load data
 data = pd.read_csv('orders(2021-2023).csv')
@@ -24,7 +24,7 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 data_scaled = scaler.fit_transform(total_revenue_per_month[['total_sales']])
 
 # Membagi data menjadi train dan test (gunakan 2021 dan 2023 sebagai train)
-train_size = int(len(data_scaled) * 0.8)
+train_size = int(len(data_scaled) * 0.7)
 train_data = data_scaled[:train_size]
 test_data = data_scaled[train_size:]
 
@@ -67,27 +67,30 @@ y_pred = scaler.inverse_transform(y_pred)  # Kembalikan ke skala asli
 y_test_inv = scaler.inverse_transform(y_test.reshape(-1, 1))  # Kembalikan ke skala asli
 
 # Menghitung MSE dan RMSE
+
 mse = mean_squared_error(y_test_inv, y_pred)
 rmse = np.sqrt(mse)
+mae = mean_absolute_error(y_test_inv, y_pred)
 
 # Menampilkan hasil di terminal
 print(f'Mean Squared Error (MSE): {mse:.2f}')
 print(f'Root Mean Squared Error (RMSE): {rmse:.2f}')
+print(f'Mean Absolute Error (MAE): {mae:.2f}')
 
-# Menampilkan prediksi total sales per month di tahun 2023 di terminal
-predicted_sales = pd.DataFrame({'Bulan': np.arange(1, len(y_pred) + 1), 'Predicted Sales': y_pred.flatten()})
+
+# Menampilkan prediksi total sales per month di tahun 2024 di terminal dengan nama bulan
+predicted_sales = pd.DataFrame({'Tahun': [2024]*len(y_pred), 'Bulan': pd.date_range('2024-01-01', periods=len(y_pred), freq='M').strftime('%B'), 'Predicted Sales': y_pred.flatten()})
 print("\nPredicted Total Sales per Month in 2024:")
 print(predicted_sales)
 
-# Visualisasi hanya prediksi total sales per month di tahun 2023
+# Visualisasi hanya prediksi total sales per month di tahun 2024 dengan nama bulan
 plt.figure(figsize=(12, 6))
-months = np.arange(1, len(y_pred) + 1)  # Menghasilkan label bulan untuk prediksi
+months = pd.date_range('2024-01-01', periods=len(y_pred), freq='M').strftime('%B')  
 plt.plot(months, y_pred, label='Predicted Sales', color='orange', marker='x')
 plt.title('Predicted Total Sales per Month in 2024')
 plt.xlabel('Month')
 plt.ylabel('Total Sales')
-plt.xticks(months)  # Label bulan
-plt.xlim(1, 12)  # Batas sumbu x
+plt.xticks(rotation=45)  # Memutar nama bulan agar lebih jelas
 plt.legend()
 plt.grid()
 plt.show()

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # Load data
 data = pd.read_csv('orders(2021-2023).csv')
@@ -69,10 +69,12 @@ y_test_inv = scaler.inverse_transform(y_test.reshape(-1, 1))  # Kembalikan ke sk
 # Menghitung MSE dan RMSE
 mse = mean_squared_error(y_test_inv, y_pred)
 rmse = np.sqrt(mse)
+mae = mean_absolute_error(y_test_inv, y_pred)
 
 # Menampilkan hasil di terminal
 print(f'Mean Squared Error (MSE): {mse:.2f}')
 print(f'Root Mean Squared Error (RMSE): {rmse:.2f}')
+print(f'Mean Absolute Error (MAE): {mae:.2f}')
 
 # Menampilkan prediksi total sales per month di tahun 2023 di terminal
 predicted_sales = pd.DataFrame({'Bulan': np.arange(1, len(y_pred) + 1), 'Predicted Sales': y_pred.flatten()})
